@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Operador — Ademir Meira Advocacia</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f7fa;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    header {
+      background: white;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .header-info {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .header-info h1 {
+      font-size: 1.5rem;
+      color: #667eea;
+    }
+
+    .user-badge {
+      background: #f0f4ff;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-logout:hover {
+      background: #dc2626;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 30px;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 30px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 1.1rem;
+    }
+
+    /* Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-item {
+      background: #f0f4ff;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border-left: 4px solid #667eea;
+    }
+
+    .stat-numero {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Filtros */
+    .filtros {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filtro-grupo {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filtro-grupo label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select, input {
+      padding: 10px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-filtrar {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-filtrar:hover {
+      background: #764ba2;
+    }
+
+    /* Main Content */
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Busca */
+    .busca-bar {
+      display: flex;
+      gap: 10px;
+    }
+
+    .busca-bar input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+
+    .btn-buscar {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn-buscar:hover {
+      background: #764ba2;
+    }
+
+    /* Conversas List */
+    .conversas-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .conversa-card {
+      background: white;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #667eea;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .conversa-card:hover {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+      transform: translateX(4px);
+    }
+
+    .conversa-card.urgente {
+      border-left-color: #ef4444;
+    }
+
+    .conversa-card.resolvida {
+      border-left-color: #10b981;
+      opacity: 0.7;
+    }
+
+    .conversa-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 10px;
+    }
+
+    .conversa-titulo {
+      font-weight: bold;
+      color: #333;
+      font-size: 1rem;
+    }
+
+    .conversa-cliente {
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .conversa-prioridade {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .prioridade-critica {
+      background: #fecaca;
+      color: #991b1b;
+    }
+
+    .prioridade-alta {
+      background: #fed7aa;
+      color: #92400e;
+    }
+
+    .prioridade-media {
+      background: #fef08a;
+      color: #713f12;
+    }
+
+    .prioridade-baixa {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .conversa-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+
+    .tag {
+      background: #f0f4ff;
+      color: #667eea;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .conversa-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: #999;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .conversa-nao-lidas {
+      background: #667eea;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    .atribuir-area {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .select-operador {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .btn-atribuir {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .btn-atribuir:hover {
+      background: #059669;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-info">
+      <h1>⚖️ Dashboard Operador</h1>
+      <div class="user-badge" id="userBadge">👤 Carregando...</div>
+    </div>
+    <button class="btn-logout" onclick="fazerLogout()">🚪 Sair</button>
+  </header>
+
+  <!-- MAIN -->
+  <div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- STATS -->
+      <div class="card">
+        <h3>📊 Minha Fila</h3>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-numero" id="statAbertas">0</div>
+            <div class="stat-label">Abertas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-numero" id="statUrgentes">0</div>
+            <div class="stat-label">Urgentes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-numero" id="statNaoLidas">0</div>
+            <div class="stat-label">Não Lidas</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-numero" id="statResolvidas">0</div>
+            <div class="stat-label">Resolvidas</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
+      <div class="card">
+        <h3>🔍 Filtros</h3>
+        <div class="filtros">
+
+          <div class="filtro-grupo">
+            <label>Status</label>
+            <select id="filtroStatus" onchange="aplicarFiltros()">
+              <option value="">Todos</option>
+              <option value="ativa">Ativa</option>
+              <option value="aguardando_cliente">Aguardando Cliente</option>
+              <option value="resolvida">Resolvida</option>
+              <option value="escalada">Escalada</option>
+            </select>
+          </div>
+
+          <div class="filtro-grupo">
+            <label>Prioridade</label>
+            <select id="filtroPrioridade" onchange="aplicarFiltros()">
+              <option value="">Todos</option>
+              <option value="critica">🔴 Crítica</option>
+              <option value="alta">🟠 Alta</option>
+              <option value="media">🟡 Média</option>
+              <option value="baixa">🟢 Baixa</option>
+            </select>
+          </div>
+
+          <div class="filtro-grupo">
+            <label>Categoria</label>
+            <select id="filtroCategoria" onchange="aplicarFiltros()">
+              <option value="">Todas</option>
+              <option value="trabalhista">⚙️ Direito Trabalhista</option>
+              <option value="administrativo">📋 Administrativo</option>
+              <option value="sindical">👥 Sindical</option>
+              <option value="previdenciario">🏦 Previdenciário</option>
+            </select>
+          </div>
+
+          <button class="btn-filtrar" onclick="aplicarFiltros()">✅ Aplicar Filtros</button>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+      <!-- BUSCA -->
+      <div class="busca-bar">
+        <input
+          type="text"
+          id="buscaInput"
+          placeholder="🔍 Buscar por cliente, assunto, telefone..."
+        >
+        <button class="btn-buscar" onclick="buscar()">Buscar</button>
+      </div>
+
+      <!-- LISTA DE CONVERSAS -->
+      <div id="conversasList" class="conversas-list">
+        <div class="empty-state">
+          <p>Carregando conversas...</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    let sb = null;
+    let operadorAtual = null;
+    let todasConversas = [];
+    let conversasFiltradas = [];
+
+    // Inicializar
+    async function inicializar() {
+      try {
+        // Verificar autenticação
+        operadorAtual = JSON.parse(localStorage.getItem('operador_autenticado'));
+        if (!operadorAtual) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        // Inicializar Supabase
+        sb = supabase.createClient(
+          window.APP_CONFIG.SUPABASE_URL,
+          window.APP_CONFIG.SUPABASE_KEY
+        );
+
+        // Atualizar UI
+        document.getElementById('userBadge').textContent =
+          `👤 ${operadorAtual.nome} (${operadorAtual.nivel})`;
+
+        // Carregar conversas
+        await carregarConversas();
+
+        // Notificações em tempo real (Supabase Realtime)
+        configurarRealtime();
+
+      } catch (erro) {
+        console.error('Erro:', erro);
+        alert('Erro ao inicializar: ' + erro.message);
+      }
+    }
+
+    // Carregar conversas
+    async function carregarConversas() {
+      try {
+        // Se for operador, mostrar apenas suas conversas
+        let query = sb.from('conversas').select('*');
+
+        if (operadorAtual.nivel === 'operador') {
+          query = query.eq('operador_responsavel_id', operadorAtual.id);
+        }
+
+        const { data, error } = await query.order('prioridade', { ascending: true })
+          .order('updated_at', { ascending: false });
+
+        if (error) throw error;
+
+        todasConversas = data || [];
+        conversasFiltradas = [...todasConversas];
+        atualizarStats();
+        renderizarConversas();
+
+      } catch (erro) {
+        console.error('Erro ao carregar:', erro);
+      }
+    }
+
+    // Renderizar conversas
+    async function renderizarConversas() {
+      const lista = document.getElementById('conversasList');
+
+      if (conversasFiltradas.length === 0) {
+        lista.innerHTML = '<div class="empty-state"><p>Nenhuma conversa encontrada</p></div>';
+        return;
+      }
+
+      lista.innerHTML = conversasFiltradas.map(c => {
+        const prioridade = c.prioridade || 'media';
+        const statusClass = c.status === 'resolvida' ? 'resolvida' : '';
+        const urgencia = prioridade === 'critica' ? 'urgente' : '';
+
+        return `
+          <div class="conversa-card ${statusClass} ${urgencia}" onclick="abrirConversa('${c.id}')">
+            <div class="conversa-header">
+              <div>
+                <div class="conversa-titulo">${c.assunto || 'Sem assunto'}</div>
+                <div class="conversa-cliente" id="cliente-${c.id}">Carregando cliente...</div>
+              </div>
+              <span class="conversa-prioridade prioridade-${prioridade}">
+                ${getPrioridadeEmoji(prioridade)} ${prioridade.toUpperCase()}
+              </span>
+            </div>
+
+            <div class="conversa-tags">
+              ${c.tags ? JSON.parse(c.tags || '[]').map(tag =>
+                `<span class="tag">${tag}</span>`
+              ).join('') : '<span class="tag">sem-tags</span>'}
+            </div>
+
+            <div class="conversa-meta">
+              <span>${c.ultima_mensagem?.substring(0, 40) || 'Sem mensagens'}...</span>
+              ${c.contador_nao_lidas > 0 ?
+                `<span class="conversa-nao-lidas">📬 ${c.contador_nao_lidas}</span>` :
+                ''}
+            </div>
+
+            ${operadorAtual.nivel !== 'operador' ? `
+              <div class="atribuir-area">
+                <select class="select-operador" id="select-${c.id}" onchange="event.stopPropagation()">
+                  <option value="">Atribuir a...</option>
+                  <option value="${operadorAtual.id}">👤 Eu</option>
+                </select>
+                <button class="btn-atribuir" onclick="event.stopPropagation(); atribuirConversa('${c.id}', document.getElementById('select-${c.id}').value)">
+                  ✅ Atribuir
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      // Carregar nomes dos clientes
+      carregarClientesConversas();
+    }
+
+    // Carregar nomes dos clientes
+    async function carregarClientesConversas() {
+      try {
+        const usuariosIds = [...new Set(todasConversas.map(c => c.usuario_id))];
+
+        const { data: usuarios, error } = await sb
+          .from('usuarios_whatsapp')
+          .select('id, nome, telefone')
+          .in('id', usuariosIds);
+
+        if (!error && usuarios) {
+          usuarios.forEach(u => {
+            const el = document.getElementById(`cliente-${u.id}`);
+            if (el) {
+              el.textContent = `${u.nome || 'Cliente'} • ${u.telefone}`;
+            }
+          });
+        }
+      } catch (erro) {
+        console.error('Erro ao carregar clientes:', erro);
+      }
+    }
+
+    // Atualizar stats
+    function atualizarStats() {
+      const abertas = todasConversas.filter(c => c.status === 'ativa').length;
+      const urgentes = todasConversas.filter(c => c.prioridade === 'critica').length;
+      const naoLidas = todasConversas.reduce((sum, c) => sum + (c.contador_nao_lidas || 0), 0);
+      const resolvidas = todasConversas.filter(c => c.status === 'resolvida').length;
+
+      document.getElementById('statAbertas').textContent = abertas;
+      document.getElementById('statUrgentes').textContent = urgentes;
+      document.getElementById('statNaoLidas').textContent = naoLidas;
+      document.getElementById('statResolvidas').textContent = resolvidas;
+    }
+
+    // Aplicar filtros
+    function aplicarFiltros() {
+      const status = document.getElementById('filtroStatus').value;
+      const prioridade = document.getElementById('filtroPrioridade').value;
+      const categoria = document.getElementById('filtroCategoria').value;
+
+      conversasFiltradas = todasConversas.filter(c => {
+        if (status && c.status !== status) return false;
+        if (prioridade && c.prioridade !== prioridade) return false;
+        if (categoria && !c.tags?.includes(categoria)) return false;
+        return true;
+      });
+
+      renderizarConversas();
+    }
+
+    // Buscar
+    function buscar() {
+      const termo = document.getElementById('buscaInput').value.toLowerCase();
+      conversasFiltradas = todasConversas.filter(c =>
+        c.assunto?.toLowerCase().includes(termo) ||
+        c.ultima_mensagem?.toLowerCase().includes(termo)
+      );
+      renderizarConversas();
+    }
+
+    // Atribuir conversa
+    async function atribuirConversa(conversaId, operadorId) {
+      if (!operadorId) {
+        alert('Selecione um operador');
+        return;
+      }
+
+      try {
+        const { error } = await sb
+          .from('conversas')
+          .update({
+            operador_responsavel_id: operadorId,
+            atribuido_em: new Date().toISOString()
+          })
+          .eq('id', conversaId);
+
+        if (error) throw error;
+
+        alert('✅ Conversa atribuída com sucesso!');
+        await carregarConversas();
+
+      } catch (erro) {
+        console.error('Erro:', erro);
+        alert('Erro: ' + erro.message);
+      }
+    }
+
+    // Abrir conversa
+    function abrirConversa(id) {
+      localStorage.setItem('conversa_selecionada', id);
+      window.location.href = '/chat-operador.html';
+    }
+
+    // Configurar Realtime
+    function configurarRealtime() {
+      // Supabase Realtime em tempo real
+      sb.channel('conversas')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'conversas' },
+          (payload) => {
+            console.log('Mudança detectada:', payload);
+            carregarConversas(); // Recarregar ao detectar mudança
+          }
+        )
+        .subscribe();
+    }
+
+    // Logout
+    function fazerLogout() {
+      localStorage.removeItem('operador_autenticado');
+      window.location.href = '/login.html';
+    }
+
+    // Helpers
+    function getPrioridadeEmoji(p) {
+      const map = { critica: '🔴', alta: '🟠', media: '🟡', baixa: '🟢' };
+      return map[p] || '🟡';
+    }
+
+    // Inicializar
+    window.addEventListener('load', inicializar);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — Ademir Meira Advocacia</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 450px;
+      width: 100%;
+      padding: 50px 40px;
+    }
+
+    .logo-area {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-area h1 {
+      font-size: 2rem;
+      color: #667eea;
+      margin-bottom: 10px;
+    }
+
+    .logo-area p {
+      color: #999;
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 0.95rem;
+    }
+
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.3s;
+    }
+
+    .btn-login:hover {
+      background: #764ba2;
+    }
+
+    .btn-login:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .divider {
+      text-align: center;
+      margin: 25px 0 20px;
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .btn-cliente {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-cliente:hover {
+      background: #f0f0f0;
+    }
+
+    .mensagem {
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .mensagem.erro {
+      background: #fee2e2;
+      color: #991b1b;
+      border-left: 4px solid #dc2626;
+      display: block;
+    }
+
+    .mensagem.sucesso {
+      background: #dcfce7;
+      color: #166534;
+      border-left: 4px solid #22c55e;
+      display: block;
+    }
+
+    .info-box {
+      background: #f0f4ff;
+      border-left: 4px solid #667eea;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+
+    .tab {
+      padding: 10px 15px;
+      background: none;
+      border: none;
+      font-weight: 600;
+      color: #999;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+      font-size: 0.95rem;
+    }
+
+    .tab.ativo {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    .tab-conteudo {
+      display: none;
+    }
+
+    .tab-conteudo.ativo {
+      display: block;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+
+    <div class="logo-area">
+      <h1>⚖️ Ademir Meira</h1>
+      <p>Advocacia & Consultoria Jurídica</p>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab ativo" onclick="trocarTab('operador')">👨‍⚖️ Operador</button>
+      <button class="tab" onclick="trocarTab('cliente')">👤 Cliente</button>
+    </div>
+
+    <!-- MENSAGEM DE ERRO/SUCESSO -->
+    <div id="mensagem" class="mensagem"></div>
+
+    <!-- TAB: OPERADOR -->
+    <div id="tab-operador" class="tab-conteudo ativo">
+      <div class="info-box">
+        🔐 <strong>Área Restrita</strong><br>
+        Apenas operadores autenticados. Realize login com suas credenciais.
+      </div>
+
+      <form id="formOperador" onsubmit="fazerLoginOperador(event)">
+
+        <div class="form-group">
+          <label for="emailOperador">E-mail Corporativo</label>
+          <input
+            type="email"
+            id="emailOperador"
+            placeholder="seu.email@ademirmeira.adv.br"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="senhaOperador">Senha</label>
+          <input
+            type="password"
+            id="senhaOperador"
+            placeholder="••••••••"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="perfilOperador">Seu Perfil</label>
+          <select id="perfilOperador" required>
+            <option value="">Selecione seu perfil...</option>
+            <option value="operador">Operador (Atende conversas)</option>
+            <option value="gestor">Gestor (Relatórios + Atribuição)</option>
+            <option value="admin">Admin (Acesso total)</option>
+          </select>
+        </div>
+
+        <div class="loading" id="loadingOperador">
+          <div class="spinner"></div>
+          <p style="margin-top: 10px; color: #999;">Autenticando...</p>
+        </div>
+
+        <button type="submit" class="btn-login" id="btnLoginOperador">
+          🔓 Fazer Login
+        </button>
+
+      </form>
+
+      <p style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #999;">
+        Não tem acesso? Contate o administrador.
+      </p>
+    </div>
+
+    <!-- TAB: CLIENTE -->
+    <div id="tab-cliente" class="tab-conteudo">
+      <div class="info-box">
+        💬 <strong>Área do Cliente</strong><br>
+        Acesse suas conversas com nossos advogados. Sem login necessário.
+      </div>
+
+      <form id="formCliente" onsubmit="acessarClienteChat(event)">
+
+        <div class="form-group">
+          <label for="telefoneCliente">Seu Telefone (WhatsApp)</label>
+          <input
+            type="tel"
+            id="telefoneCliente"
+            placeholder="(79) 99999-9999"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="nomeCliente">Seu Nome</label>
+          <input
+            type="text"
+            id="nomeCliente"
+            placeholder="João Silva"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn-login">
+          💬 Acessar Chat
+        </button>
+
+      </form>
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    let sb = null;
+
+    // Inicializar Supabase
+    function inicializar() {
+      if (!window.APP_CONFIG) {
+        mostrarMensagem('config.js não encontrado', 'erro');
+        return;
+      }
+      sb = supabase.createClient(
+        window.APP_CONFIG.SUPABASE_URL,
+        window.APP_CONFIG.SUPABASE_KEY
+      );
+    }
+
+    // Trocar entre abas
+    function trocarTab(novaTab) {
+      // Remover ativo de todos
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
+      document.querySelectorAll('.tab-conteudo').forEach(t => t.classList.remove('ativo'));
+
+      // Adicionar ativo ao selecionado
+      event.target.classList.add('ativo');
+      document.getElementById(`tab-${novaTab}`).classList.add('ativo');
+
+      // Limpar mensagens
+      document.getElementById('mensagem').style.display = 'none';
+    }
+
+    // LOGIN DO OPERADOR
+    async function fazerLoginOperador(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('emailOperador').value;
+      const senha = document.getElementById('senhaOperador').value;
+      const perfil = document.getElementById('perfilOperador').value;
+
+      if (!perfil) {
+        mostrarMensagem('Selecione seu perfil', 'erro');
+        return;
+      }
+
+      mostrarLoading('operador', true);
+
+      try {
+        // Buscar operador no banco
+        const { data: operadores, error: e1 } = await sb
+          .from('operadores')
+          .select('*')
+          .eq('email', email)
+          .single();
+
+        if (e1 || !operadores) {
+          throw new Error('E-mail ou senha incorretos');
+        }
+
+        if (!operadores.ativo) {
+          throw new Error('Sua conta foi desativada. Contate o admin.');
+        }
+
+        // NOTA: Em produção, usar bcrypt para validar senha
+        // Por enquanto, simulamos com senha simples (SÓ PARA DEMO)
+        const senhaCorreta = operadores.email.split('@')[0] === 'admin'; // Demo
+        if (!senhaCorreta && senha !== 'senha123') {
+          throw new Error('Senha incorreta');
+        }
+
+        // Login bem-sucedido!
+        localStorage.setItem('operador_autenticado', JSON.stringify({
+          id: operadores.id,
+          nome: operadores.nome,
+          email: operadores.email,
+          nivel: operadores.nivel_acesso,
+          perfil: perfil,
+          timestamp: Date.now()
+        }));
+
+        mostrarMensagem('✅ Login realizado! Redirecionando...', 'sucesso');
+
+        setTimeout(() => {
+          window.location.href = '/operador-dashboard.html';
+        }, 1500);
+
+      } catch (erro) {
+        console.error('Erro login:', erro);
+        mostrarMensagem('❌ ' + erro.message, 'erro');
+      } finally {
+        mostrarLoading('operador', false);
+      }
+    }
+
+    // ACESSO DO CLIENTE
+    async function acessarClienteChat(e) {
+      e.preventDefault();
+
+      const telefone = document.getElementById('telefoneCliente').value;
+      const nome = document.getElementById('nomeCliente').value;
+
+      try {
+        // Buscar ou criar usuário cliente
+        let { data: usuario, error: e1 } = await sb
+          .from('usuarios_whatsapp')
+          .select('id')
+          .eq('telefone', telefone)
+          .single();
+
+        if (e1) {
+          // Criar novo usuário
+          const { data: novo, error: e2 } = await sb
+            .from('usuarios_whatsapp')
+            .insert({
+              telefone,
+              nome,
+              ativo: true
+            })
+            .select();
+
+          if (e2) throw e2;
+          usuario = novo[0];
+        }
+
+        // Armazenar sessão do cliente
+        localStorage.setItem('cliente_atual', JSON.stringify({
+          id: usuario.id,
+          nome: nome,
+          telefone: telefone,
+          timestamp: Date.now()
+        }));
+
+        mostrarMensagem('✅ Acesso permitido! Redirecionando...', 'sucesso');
+
+        setTimeout(() => {
+          window.location.href = '/chat.html';
+        }, 1000);
+
+      } catch (erro) {
+        console.error('Erro:', erro);
+        mostrarMensagem('❌ Erro: ' + erro.message, 'erro');
+      }
+    }
+
+    function mostrarMensagem(texto, tipo) {
+      const el = document.getElementById('mensagem');
+      el.textContent = texto;
+      el.className = `mensagem ${tipo}`;
+    }
+
+    function mostrarLoading(tab, mostrar) {
+      document.getElementById(`loading${tab.charAt(0).toUpperCase() + tab.slice(1)}`).style.display = mostrar ? 'block' : 'none';
+      document.getElementById(`btnLogin${tab.charAt(0).toUpperCase() + tab.slice(1)}`).disabled = mostrar;
+    }
+
+    // Inicializar ao carregar
+    window.addEventListener('load', inicializar);
+  </script>
+
+</body>
+</html>

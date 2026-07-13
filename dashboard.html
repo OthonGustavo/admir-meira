@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Teste de Conexão Supabase</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #667eea;
+    }
+
+    .status-conexao {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+      margin-top: 15px;
+    }
+
+    .status-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.conectado {
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .status-dot.desconectado {
+      background: #ef4444;
+      box-shadow: 0 0 10px #ef4444;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .card h3 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+    }
+
+    .card-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .card-stat:last-child {
+      border-bottom: none;
+    }
+
+    .card-stat-label {
+      font-weight: 500;
+      color: #666;
+    }
+
+    .card-stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #667eea;
+    }
+
+    .tabelas-section {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .tabelas-section h2 {
+      color: #667eea;
+      margin-bottom: 25px;
+      font-size: 1.5rem;
+    }
+
+    .tabela-container {
+      margin-bottom: 30px;
+    }
+
+    .tabela-titulo {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid #667eea;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    thead {
+      background: #f8f9fa;
+    }
+
+    th {
+      padding: 12px 15px;
+      text-align: left;
+      font-weight: 600;
+      color: #667eea;
+      border-bottom: 2px solid #667eea;
+    }
+
+    td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #e9ecef;
+    }
+
+    tbody tr:hover {
+      background: #f8f9fa;
+    }
+
+    .carregando {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .erro {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #dc2626;
+    }
+
+    .sucesso {
+      background: #dcfce7;
+      color: #166534;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #22c55e;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 30px;
+      color: #999;
+      font-style: italic;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 40px;
+      padding: 20px;
+    }
+
+    .botoes {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #764ba2;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <header>
+      <h1>📊 Dashboard — Teste de Conexão Supabase</h1>
+      <div class="status-conexao">
+        <div class="status-dot desconectado" id="statusDot"></div>
+        <span id="statusTexto">Conectando ao Supabase...</span>
+      </div>
+      <div class="botoes">
+        <button onclick="recarregar()">🔄 Recarregar Dados</button>
+        <button onclick="adicionarDados()">➕ Adicionar Dados de Teste</button>
+      </div>
+    </header>
+
+    <!-- ESTATÍSTICAS -->
+    <div class="grid" id="gridEstatisticas">
+      <div class="card">
+        <h3>👥 Usuários WhatsApp</h3>
+        <div class="carregando"><div class="spinner"></div></div>
+      </div>
+      <div class="card">
+        <h3>💬 Conversas</h3>
+        <div class="carregando"><div class="spinner"></div></div>
+      </div>
+      <div class="card">
+        <h3>📨 Mensagens do Operador</h3>
+        <div class="carregando"><div class="spinner"></div></div>
+      </div>
+      <div class="card">
+        <h3>⚖️ Processos</h3>
+        <div class="carregando"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- TABELAS DE DADOS -->
+    <div class="tabelas-section">
+      <h2>📋 Dados do Banco</h2>
+
+      <!-- Usuários WhatsApp -->
+      <div class="tabela-container">
+        <div class="tabela-titulo">👥 Usuários WhatsApp</div>
+        <div id="tabelaUsuarios">
+          <div class="carregando"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Conversas -->
+      <div class="tabela-container">
+        <div class="tabela-titulo">💬 Conversas</div>
+        <div id="tabelaConversas">
+          <div class="carregando"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Mensagens -->
+      <div class="tabela-container">
+        <div class="tabela-titulo">📨 Mensagens do Operador</div>
+        <div id="tabelaMensagens">
+          <div class="carregando"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+
+      <!-- Processos -->
+      <div class="tabela-container">
+        <div class="tabela-titulo">⚖️ Processos Jurídicos</div>
+        <div id="tabelaProcessos">
+          <div class="carregando"><div class="spinner"></div> Carregando...</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <footer>
+    <p>🔐 Conectado com: <strong id="urlInfo">Supabase</strong> | Service Role Active</p>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    let sb = null;
+
+    async function inicializar() {
+      try {
+        if (!window.APP_CONFIG) {
+          mostrarErro('❌ config.js não encontrado!');
+          return;
+        }
+
+        const SUPABASE_URL = window.APP_CONFIG.SUPABASE_URL;
+        const SUPABASE_KEY = window.APP_CONFIG.SUPABASE_KEY;
+
+        sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.getElementById('urlInfo').textContent = SUPABASE_URL;
+
+        await carregarDados();
+        atualizarStatus(true);
+
+      } catch (erro) {
+        console.error('Erro ao inicializar:', erro);
+        mostrarErro('❌ Erro ao conectar com Supabase: ' + erro.message);
+        atualizarStatus(false);
+      }
+    }
+
+    async function carregarDados() {
+      try {
+        // Usuários
+        const { data: usuarios, error: e1 } = await sb.from('usuarios_whatsapp').select('*');
+        if (e1) throw e1;
+        preencherTabelaUsuarios(usuarios || []);
+        preencherCartao(0, usuarios?.length || 0);
+
+        // Conversas
+        const { data: conversas, error: e2 } = await sb.from('conversas').select('*');
+        if (e2) throw e2;
+        preencherTabelaConversas(conversas || []);
+        preencherCartao(1, conversas?.length || 0);
+
+        // Mensagens
+        const { data: mensagens, error: e3 } = await sb.from('mensagens_operador').select('*');
+        if (e3) throw e3;
+        preencherTabelaMensagens(mensagens || []);
+        preencherCartao(2, mensagens?.length || 0);
+
+        // Processos
+        const { data: processos, error: e4 } = await sb.from('processos').select('*');
+        if (e4) throw e4;
+        preencherTabelaProcessos(processos || []);
+        preencherCartao(3, processos?.length || 0);
+
+        mostrarSucesso('✅ Dados carregados com sucesso!');
+      } catch (erro) {
+        console.error('Erro ao carregar dados:', erro);
+        mostrarErro('❌ Erro ao carregar dados: ' + erro.message);
+      }
+    }
+
+    function preencherCartao(indice, quantidade) {
+      const cartoes = document.querySelectorAll('.card');
+      if (cartoes[indice]) {
+        cartoes[indice].innerHTML = `
+          <h3>${cartoes[indice].querySelector('h3').textContent}</h3>
+          <div class="card-stat">
+            <span class="card-stat-label">Registros</span>
+            <span class="card-stat-value">${quantidade}</span>
+          </div>
+        `;
+      }
+    }
+
+    function preencherTabelaUsuarios(dados) {
+      const cont = document.getElementById('tabelaUsuarios');
+      if (dados.length === 0) {
+        cont.innerHTML = '<div class="vazio">Nenhum usuário encontrado</div>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Telefone</th><th>Nome</th><th>Email</th><th>Data Criação</th><th>Ativo</th></tr></thead><tbody>';
+      dados.forEach(u => {
+        const ativo = u.ativo ? '✅' : '❌';
+        html += `<tr>
+          <td>${u.telefone}</td>
+          <td>${u.nome || '—'}</td>
+          <td>${u.email || '—'}</td>
+          <td>${new Date(u.data_criacao).toLocaleString('pt-BR')}</td>
+          <td>${ativo}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      cont.innerHTML = html;
+    }
+
+    function preencherTabelaConversas(dados) {
+      const cont = document.getElementById('tabelaConversas');
+      if (dados.length === 0) {
+        cont.innerHTML = '<div class="vazio">Nenhuma conversa encontrada</div>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Assunto</th><th>Status</th><th>Mensagens</th><th>Criada em</th></tr></thead><tbody>';
+      dados.forEach(c => {
+        html += `<tr>
+          <td>${c.assunto || '—'}</td>
+          <td><strong>${c.status}</strong></td>
+          <td>${c.contador_mensagens || 0}</td>
+          <td>${new Date(c.created_at).toLocaleString('pt-BR')}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      cont.innerHTML = html;
+    }
+
+    function preencherTabelaMensagens(dados) {
+      const cont = document.getElementById('tabelaMensagens');
+      if (dados.length === 0) {
+        cont.innerHTML = '<div class="vazio">Nenhuma mensagem encontrada</div>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Operador</th><th>Texto</th><th>Enviada em</th><th>Lida</th></tr></thead><tbody>';
+      dados.forEach(m => {
+        const lida = m.lida ? '✅' : '❌';
+        const texto = (m.texto || '').substring(0, 50) + '...';
+        html += `<tr>
+          <td>${m.usuario_operador || '—'}</td>
+          <td>${texto}</td>
+          <td>${new Date(m.created_at).toLocaleString('pt-BR')}</td>
+          <td>${lida}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      cont.innerHTML = html;
+    }
+
+    function preencherTabelaProcessos(dados) {
+      const cont = document.getElementById('tabelaProcessos');
+      if (dados.length === 0) {
+        cont.innerHTML = '<div class="vazio">Nenhum processo encontrado</div>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Número</th><th>Tipo</th><th>Tribunal</th><th>Status</th><th>Valor</th></tr></thead><tbody>';
+      dados.forEach(p => {
+        const valor = p.valor_causa ? 'R$ ' + p.valor_causa.toFixed(2) : '—';
+        html += `<tr>
+          <td>${p.numero_processo || '—'}</td>
+          <td>${p.tipo_acao || '—'}</td>
+          <td>${p.tribunal || '—'} (${p.uf || ''})</td>
+          <td><strong>${p.status_processo}</strong></td>
+          <td>${valor}</td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      cont.innerHTML = html;
+    }
+
+    function atualizarStatus(conectado) {
+      const dot = document.getElementById('statusDot');
+      const texto = document.getElementById('statusTexto');
+
+      if (conectado) {
+        dot.className = 'status-dot conectado';
+        texto.textContent = '✅ Conectado ao Supabase';
+      } else {
+        dot.className = 'status-dot desconectado';
+        texto.textContent = '❌ Desconectado';
+      }
+    }
+
+    function mostrarErro(msg) {
+      const header = document.querySelector('header');
+      const div = document.createElement('div');
+      div.className = 'erro';
+      div.textContent = msg;
+      header.appendChild(div);
+    }
+
+    function mostrarSucesso(msg) {
+      const header = document.querySelector('header');
+      // Remover mensagens anteriores
+      document.querySelectorAll('.sucesso, .erro').forEach(e => e.remove());
+      const div = document.createElement('div');
+      div.className = 'sucesso';
+      div.textContent = msg;
+      header.appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
+
+    function recarregar() {
+      location.reload();
+    }
+
+    async function adicionarDados() {
+      if (!sb) {
+        mostrarErro('❌ Supabase não inicializado');
+        return;
+      }
+      try {
+        const telefone = '5579' + Math.floor(Math.random() * 9000000000 + 1000000000);
+
+        const { error } = await sb.from('usuarios_whatsapp').insert({
+          telefone,
+          nome: 'Novo Cliente ' + new Date().getHours() + ':' + new Date().getMinutes(),
+          email: 'cliente@example.com'
+        });
+
+        if (error) throw error;
+        mostrarSucesso('✅ Novo usuário adicionado!');
+        setTimeout(() => carregarDados(), 500);
+      } catch (erro) {
+        mostrarErro('❌ Erro ao adicionar dados: ' + erro.message);
+      }
+    }
+
+    // Inicializar ao carregar a página
+    window.addEventListener('load', inicializar);
+  </script>
+
+</body>
+</html>
