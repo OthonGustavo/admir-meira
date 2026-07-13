@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  ARQUIVO TEMPORÁRIO DE DIAGNÓSTICO — pode ser apagado depois.
+  Objetivo: monitorar EM TEMPO REAL se qualquer dado novo chega
+  ao Supabase (de qualquer fonte: bot, WhatsApp, n8n, operador).
+  Não faz parte do site. Não está linkado no menu.
+  ============================================================
+-->
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor temporário — chegada de dados</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #0f1720; color: #e6edf3; margin: 0; padding: 24px; }
+    h1 { font-size: 1.3rem; margin: 0 0 4px; }
+    .aviso { background: #3a2a00; color: #ffd479; border: 1px solid #7a5c00; padding: 10px 14px; border-radius: 6px; font-size: 0.85rem; margin: 12px 0 20px; }
+    .topo { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 18px; font-size: 0.85rem; color: #9fb0c0; }
+    .pill { background: #16212e; padding: 6px 12px; border-radius: 20px; }
+    .pill b { color: #e6edf3; }
+    table { width: 100%; border-collapse: collapse; background: #131c26; border-radius: 8px; overflow: hidden; }
+    th, td { text-align: left; padding: 11px 14px; font-size: 0.85rem; border-bottom: 1px solid #1e2b38; }
+    th { background: #1a2734; color: #9fb0c0; font-weight: normal; text-transform: uppercase; font-size: 0.72rem; letter-spacing: .5px; }
+    td.num { font-variant-numeric: tabular-nums; font-weight: bold; }
+    tr.flash { animation: flash 2.5s ease-out; }
+    @keyframes flash { 0% { background: #14532d; } 100% { background: transparent; } }
+    .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .dot.ok { background: #2ea043; }
+    .dot.silencio { background: #6e7681; }
+    .dot.bloq { background: #d29922; }
+    .dot.erro { background: #f85149; }
+    .status-grande { margin: 22px 0; padding: 16px 18px; border-radius: 8px; background: #131c26; font-size: 0.95rem; }
+    .status-grande.novo { background: #14532d; color: #b6ffce; }
+    #log { margin-top: 20px; background: #0b1219; border: 1px solid #1e2b38; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.8rem; max-height: 260px; overflow-y: auto; }
+    #log div { padding: 2px 0; border-bottom: 1px solid #131c26; }
+    .log-novo { color: #56d364; }
+    .log-info { color: #6e7681; }
+    a.voltar { color: #58a6ff; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <h1>🔧 Monitor temporário — chegada de dados no Supabase</h1>
+  <a class="voltar" href="conversas.html">← voltar para Conversas</a>
+
+  <div class="aviso">
+    <b>Arquivo temporário de diagnóstico.</b> Ele consulta o banco a cada 5 segundos e avisa
+    assim que <b>qualquer</b> tabela receber um registro novo. Mande uma mensagem no WhatsApp
+    e observe: se nada acender aqui, é porque o dado <b>não chegou ao banco</b> (problema no bot/Railway,
+    não no site). Pode apagar este arquivo depois: <code>site/monitor-temp.html</code>.
+  </div>
+
+  <div class="topo">
+    <span class="pill">Verificações: <b id="checks">0</b></span>
+    <span class="pill">Última checagem: <b id="ultima">—</b></span>
+    <span class="pill">Intervalo: <b>5s</b></span>
+    <span class="pill">Total de registros: <b id="total">—</b></span>
+  </div>
+
+  <div class="status-grande" id="status">Iniciando monitor…</div>
+
+  <table>
+    <thead>
+      <tr><th>Tabela</th><th>Registros</th><th>Último registro</th><th>Situação</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+
+  <div id="log"></div>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    if (!window.APP_CONFIG) {
+      document.write('<p style="color:#ffd479;padding:30px;">Falta config.js. Copie config.example.js para config.js e preencha.</p>');
+      throw new Error('config.js ausente');
+    }
+    const SUPABASE_URL = window.APP_CONFIG.SUPABASE_URL;
+    const SUPABASE_KEY = window.APP_CONFIG.SUPABASE_KEY;
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // tabela -> coluna de data usada para "último registro"
+    const TABELAS = [
+      { nome: 'conversas',            data: 'created_at' },
+      { nome: 'mensagens_operador',   data: 'created_at' },
+      { nome: 'atendimentos_humanos', data: 'iniciado_em' },
+      { nome: 'processos',            data: 'created_at' },
+      { nome: 'usuarios_whatsapp',    data: 'data_criacao' } // pode estar bloqueada por RLS
+    ];
+
+    const tbody = document.getElementById('tbody');
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+    let checks = 0;
+    let anterior = {}; // nome -> contagem conhecida
+    let primeiraVez = true;
+
+    function agora() { return new Date().toLocaleTimeString('pt-BR'); }
+    function log(txt, cls) {
+      const d = document.createElement('div');
+      d.className = cls || '';
+      d.textContent = '[' + agora() + '] ' + txt;
+      logEl.prepend(d);
+    }
+    function fmtData(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleString('pt-BR');
+    }
+
+    async function checarTabela(t) {
+      // count exato + registro mais recente
+      const { count, error: e1 } = await sb
+        .from(t.nome)
+        .select('*', { count: 'exact', head: true });
+
+      if (e1) return { nome: t.nome, erro: e1.message, bloqueado: /permission|policy|rls/i.test(e1.message) };
+
+      const { data, error: e2 } = await sb
+        .from(t.nome)
+        .select(t.data)
+        .order(t.data, { ascending: false })
+        .limit(1);
+
+      const ultimo = (!e2 && data && data[0]) ? data[0][t.data] : null;
+      return { nome: t.nome, count: count || 0, ultimo };
+    }
+
+    function pintarLinha(r) {
+      let tr = document.getElementById('row-' + r.nome);
+      if (!tr) {
+        tr = document.createElement('tr');
+        tr.id = 'row-' + r.nome;
+        tbody.appendChild(tr);
+      }
+      let dot, situacao;
+      if (r.erro) {
+        if (r.bloqueado) { dot = 'bloq'; situacao = 'bloqueada (RLS) — invisível p/ chave pública'; }
+        else { dot = 'erro'; situacao = 'erro: ' + r.erro; }
+      } else {
+        dot = 'silencio'; situacao = 'sem novidades';
+      }
+      tr.innerHTML =
+        '<td>' + r.nome + '</td>' +
+        '<td class="num">' + (r.count != null ? r.count : '—') + '</td>' +
+        '<td>' + fmtData(r.ultimo) + '</td>' +
+        '<td><span class="dot ' + dot + '"></span>' + situacao + '</td>';
+      return tr;
+    }
+
+    async function ciclo() {
+      checks++;
+      document.getElementById('checks').textContent = checks;
+      document.getElementById('ultima').textContent = agora();
+
+      let totalGeral = 0;
+      let houveNovo = false;
+
+      const resultados = await Promise.all(TABELAS.map(checarTabela));
+
+      for (const r of resultados) {
+        const tr = pintarLinha(r);
+        if (r.count != null) totalGeral += r.count;
+
+        if (r.count != null && !primeiraVez) {
+          const antes = anterior[r.nome] != null ? anterior[r.nome] : r.count;
+          if (r.count > antes) {
+            houveNovo = true;
+            const quantos = r.count - antes;
+            log('🟢 NOVO! ' + quantos + ' registro(s) em "' + r.nome + '" (agora ' + r.count + ')', 'log-novo');
+            tr.classList.remove('flash'); void tr.offsetWidth; tr.classList.add('flash');
+          }
+        }
+        if (r.count != null) anterior[r.nome] = r.count;
+      }
+
+      document.getElementById('total').textContent = totalGeral;
+
+      if (primeiraVez) {
+        log('Monitor iniciado. Estado inicial capturado. Aguardando novos dados…', 'log-info');
+        statusEl.textContent = '⏳ Aguardando novas mensagens… (mande algo no WhatsApp e observe)';
+        primeiraVez = false;
+      } else if (houveNovo) {
+        statusEl.textContent = '✅ Dado novo detectado às ' + agora() + '! O fluxo está funcionando.';
+        statusEl.classList.add('novo');
+        setTimeout(() => statusEl.classList.remove('novo'), 4000);
+      } else {
+        statusEl.textContent = '⏳ Aguardando novas mensagens… nada novo até ' + agora() + '.';
+      }
+    }
+
+    ciclo();
+    setInterval(ciclo, 5000);
+  </script>
+</body>
+</html>

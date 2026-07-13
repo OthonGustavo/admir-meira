@@ -1,6 +1,6 @@
-# Páginas internas de administração (contêm tokens de acesso — não publicar)
-conversas.html
-monitor-temp.html
+# Credenciais específicas de cada ambiente (dev vs. produção).
+# Copie config.example.js para config.js e preencha localmente.
+config.js
 
 # Arquivos temporários
 _*.html
