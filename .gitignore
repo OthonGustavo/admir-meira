@@ -1,0 +1,10 @@
+# Páginas internas de administração (contêm tokens de acesso — não publicar)
+conversas.html
+monitor-temp.html
+
+# Arquivos temporários
+_*.html
+
+# Sistema
+.DS_Store
+Thumbs.db
