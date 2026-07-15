@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <base href="/v2/">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fale Conosco — Ademir Meira Advocacia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="v2.css">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="topbar-contacts">
+        <a href="tel:+557932113775">(79) 3211-3775</a>
+        <a href="mailto:contato@ademirmeira.adv.br">contato@ademirmeira.adv.br</a>
+      </div>
+      <span class="topbar-oab">Seg. a sex. · 08:00 – 12:00 e 14:00 – 18:00</span>
+    </div>
+  </div>
+
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="index.html" class="brand">
+        <span class="brand-name">Ademir <em>Meira</em></span>
+        <span class="brand-sub">Advocacia</span>
+      </a>
+      <button class="nav-toggle" aria-label="Abrir menu"><span></span></button>
+      <nav class="nav-links">
+        <a href="index.html">Início</a>
+        <a href="sobre.html">O Escritório</a>
+        <a href="atuacao.html">Atuação</a>
+        <a href="consulta.html">Consulta Processual</a>
+        <a href="localizacao.html">Localização</a>
+        <a href="contato.html" class="nav-cta active">Fale Conosco</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <section class="page-hero">
+      <div class="page-hero-bg" style="background-image:url('../assets/sobre2.webp')"></div>
+      <div class="container">
+        <p class="breadcrumb"><a href="index.html">Início</a><span>Contato</span></p>
+        <h1>Estamos à disposição.</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container contact-grid">
+        <div data-reveal="left">
+          <span class="eyebrow">Fale conosco</span>
+          <h2 style="font-family:var(--serif); font-size:clamp(1.9rem,3.4vw,2.6rem); font-weight:500; color:var(--navy); line-height:1.2;">
+            Dúvidas, consultas e agendamentos</h2>
+          <p style="margin-top:16px;">Nossos clientes são importantes para nós.
+             Preencha o formulário ou fale diretamente pelos canais abaixo, e
+             retornaremos o quanto antes.</p>
+
+          <dl class="contact-list">
+            <div class="contact-item">
+              <dt>Telefone</dt>
+              <dd><a href="tel:+557932113775">(79) 3211-3775</a></dd>
+            </div>
+            <div class="contact-item">
+              <dt>WhatsApp</dt>
+              <dd><a href="https://wa.me/5579996403775" target="_blank" rel="noopener">(79) 99640-3775</a></dd>
+            </div>
+            <div class="contact-item">
+              <dt>E-mail</dt>
+              <dd><a href="mailto:contato@ademirmeira.adv.br">contato@ademirmeira.adv.br</a></dd>
+            </div>
+            <div class="contact-item">
+              <dt>Endereço</dt>
+              <dd>Av. Deputado Sílvio Teixeira, 1.300 — Salas 117 e 118<br>
+                  Jardins, Aracaju - SE</dd>
+            </div>
+            <div class="contact-item">
+              <dt>Horário</dt>
+              <dd>Seg. a sex. — 08:00 às 12:00 e 14:00 às 18:00</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="form-card" data-reveal="right">
+          <!-- O botão Enviar abre o e-mail já preenchido para contato@ademirmeira.adv.br. -->
+          <form id="form-contato" onsubmit="return enviarContato(event)">
+            <label for="f-nome">Nome</label>
+            <input id="f-nome" type="text" name="nome" placeholder="Seu nome completo">
+
+            <label for="f-email">E-mail *</label>
+            <input id="f-email" type="email" name="email" placeholder="voce@exemplo.com" required>
+
+            <label for="f-msg">Mensagem</label>
+            <textarea id="f-msg" name="mensagem" rows="6" placeholder="Descreva brevemente a sua dúvida ou situação"></textarea>
+
+            <button type="submit" class="btn btn-gold">Enviar mensagem <span class="arrow">→</span></button>
+          </form>
+          <p class="form-note">Ao enviar, você concorda com a nossa
+            <a href="../politica-de-privacidade.html">Política de Privacidade</a>.
+            O envio abre o seu aplicativo de e-mail com a mensagem preenchida.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-band">
+      <div class="cta-inner" data-reveal>
+        <h2>Prefere conversar pelo <em>WhatsApp</em>?</h2>
+        <p>Atendimento em horário comercial, de segunda a sexta.</p>
+        <a href="https://wa.me/5579996403775" target="_blank" rel="noopener" class="btn btn-gold">Enviar mensagem <span class="arrow">→</span></a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-main">
+      <div class="footer-about">
+        <a href="index.html" class="brand">
+          <span class="brand-name">Ademir <em>Meira</em></span>
+          <span class="brand-sub">Advocacia</span>
+        </a>
+        <p>Mais de 30 anos de advocacia dedicada ao direito dos trabalhadores,
+           das entidades sindicais e dos segurados da Previdência.</p>
+      </div>
+      <div>
+        <h4>Navegação</h4>
+        <ul class="footer-links">
+          <li><a href="sobre.html">O Escritório</a></li>
+          <li><a href="atuacao.html">Áreas de Atuação</a></li>
+          <li><a href="consulta.html">Consulta Processual</a></li>
+          <li><a href="localizacao.html">Localização</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contato</h4>
+        <address>
+          <span>Av. Deputado Sílvio Teixeira, 1.300<br>Salas 117 e 118 — Jardins, Aracaju - SE</span>
+          <a href="tel:+557932113775">(79) 3211-3775</a>
+          <a href="mailto:contato@ademirmeira.adv.br">contato@ademirmeira.adv.br</a>
+        </address>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2026 Ademir Meira Advocacia. Todos os direitos reservados.</span>
+        <nav class="footer-legal">
+          <a href="../termos-de-uso.html">Termos de Uso</a>
+          <a href="../politica-de-privacidade.html">Política de Privacidade</a>
+        </nav>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function enviarContato(e){
+      e.preventDefault();
+      var f = e.target;
+      var corpo = 'Nome: ' + f.nome.value + '%0D%0AE-mail: ' + f.email.value +
+                  '%0D%0A%0D%0A' + f.mensagem.value;
+      window.location.href = 'mailto:contato@ademirmeira.adv.br' +
+        '?subject=' + encodeURIComponent('Contato pelo site — ' + f.nome.value) +
+        '&body=' + corpo;
+      return false;
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="v2.js"></script>
+</body>
+</html>
