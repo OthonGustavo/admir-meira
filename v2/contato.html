@@ -183,16 +183,18 @@
     function enviarContato(e){
       e.preventDefault();
       var f = e.target;
-      var corpo = 'Nome: ' + f.nome.value + '%0D%0AE-mail: ' + f.email.value +
-                  '%0D%0A%0D%0A' + f.mensagem.value;
+      // encodeURIComponent em cada campo impede que o conteúdo digitado
+      // injete parâmetros extras (&cc=, &bcc=) ou quebre a URL mailto:
+      var corpo = 'Nome: ' + f.nome.value + '\r\nE-mail: ' + f.email.value +
+                  '\r\n\r\n' + f.mensagem.value;
       window.location.href = 'mailto:contato@ademirmeira.adv.br' +
         '?subject=' + encodeURIComponent('Contato pelo site — ' + f.nome.value) +
-        '&body=' + corpo;
+        '&body=' + encodeURIComponent(corpo);
       return false;
     }
   </script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous"></script>
   <script defer src="v2.js"></script>
 </body>
 </html>
