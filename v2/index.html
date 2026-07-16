@@ -4,25 +4,89 @@
   <meta charset="UTF-8">
   <base href="/v2/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ademir Meira Advocacia — Tradição e compromisso desde 1994</title>
-  <meta name="description" content="Escritório de advocacia em Aracaju-SE com mais de 30 anos de atuação nas áreas trabalhista, sindical, administrativa e previdenciária.">
+  <title>Ademir Meira Advocacia | Advocacia em Aracaju-SE — Trabalhista, Sindical e Previdenciário</title>
+  <meta name="description" content="Ademir Meira Advocacia: escritório de advocacia em Aracaju-SE há mais de 30 anos, atuando em direito trabalhista, sindical, administrativo e previdenciário. Agende uma consulta.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://admir-v2.vercel.app/">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Ademir Meira Advocacia">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Ademir Meira Advocacia | Advocacia em Aracaju-SE">
+  <meta property="og:description" content="Escritório de advocacia em Aracaju-SE há mais de 30 anos, atuando em direito trabalhista, sindical, administrativo e previdenciário.">
+  <meta property="og:url" content="https://admir-v2.vercel.app/">
+  <meta property="og:image" content="https://admir-v2.vercel.app/assets/escritorio.webp">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ademir Meira Advocacia | Advocacia em Aracaju-SE">
+  <meta name="twitter:description" content="Escritório de advocacia em Aracaju-SE há mais de 30 anos, atuando em direito trabalhista, sindical, administrativo e previdenciário.">
+  <meta name="twitter:image" content="https://admir-v2.vercel.app/assets/escritorio.webp">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="v2.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LegalService",
+    "@id": "https://admir-v2.vercel.app/#organization",
+    "name": "Ademir Meira Advocacia",
+    "alternateName": "Ademir Meira Sociedade de Advocacia",
+    "url": "https://admir-v2.vercel.app/",
+    "logo": "https://admir-v2.vercel.app/assets/escritorio.webp",
+    "image": "https://admir-v2.vercel.app/assets/escritorio.webp",
+    "description": "Escritório de advocacia em Aracaju-SE com mais de 30 anos de atuação nas áreas trabalhista, sindical, administrativa e previdenciária.",
+    "telephone": "+55-79-3211-3775",
+    "email": "contato@ademirmeira.adv.br",
+    "priceRange": "$$",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Avenida Deputado Sílvio Teixeira, 1300, Salas 117 e 118, Jardins",
+      "addressLocality": "Aracaju",
+      "addressRegion": "SE",
+      "postalCode": "",
+      "addressCountry": "BR"
+    },
+    "areaServed": [
+      { "@type": "City", "name": "Aracaju" },
+      { "@type": "State", "name": "Sergipe" }
+    ],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:00",
+        "closes": "12:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "14:00",
+        "closes": "18:00"
+      }
+    ],
+    "sameAs": [
+      "https://instagram.com/ademirmeiraadvocacia"
+    ],
+    "founder": {
+      "@type": "Person",
+      "name": "Ademir Meira dos Santos"
+    },
+    "knowsAbout": [
+      "Direito Sindical",
+      "Direito Trabalhista",
+      "Direito Administrativo",
+      "Direito Previdenciário"
+    ]
+  }
+  </script>
 </head>
 <body>
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <div class="container topbar-inner">
-      <div class="topbar-contacts">
-        <a href="tel:+557932113775">(79) 3211-3775</a>
-        <a href="mailto:contato@ademirmeira.adv.br">contato@ademirmeira.adv.br</a>
-      </div>
-      <span class="topbar-oab">Seg. a sex. · 08:00 – 12:00 e 14:00 – 18:00</span>
-    </div>
-  </div>
 
   <!-- NAV -->
   <header class="navbar">
@@ -59,7 +123,7 @@
           <a href="atuacao.html" class="btn btn-ghost">Áreas de atuação</a>
         </div>
       </div>
-      <a href="#numeros" class="hero-scroll">Role</a>
+      <a href="#numeros" class="hero-scroll" aria-label="Rolar para baixo"></a>
     </section>
 
     <!-- STATS -->
@@ -217,6 +281,7 @@
           <span>Av. Deputado Sílvio Teixeira, 1.300<br>Salas 117 e 118 — Jardins, Aracaju - SE</span>
           <a href="tel:+557932113775">(79) 3211-3775</a>
           <a href="mailto:contato@ademirmeira.adv.br">contato@ademirmeira.adv.br</a>
+          <span class="footer-hours">Seg. a sex. · 08:00 – 12:00 e 14:00 – 18:00</span>
         </address>
       </div>
     </div>

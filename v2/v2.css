@@ -830,6 +830,14 @@ img { max-width: 100%; display: block; }
 .footer address { font-style: normal; display: grid; gap: 10px; }
 .footer address a { color: rgba(255,255,255,.8); text-decoration: none; }
 .footer address a:hover { color: var(--gold); }
+.footer-hours {
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line-dark);
+  font-size: .82rem;
+  letter-spacing: .3px;
+  color: rgba(255,255,255,.55);
+}
 
 .footer-bottom {
   border-top: 1px solid var(--line-dark);
@@ -869,6 +877,38 @@ img { max-width: 100%; display: block; }
   .topbar-contacts { display: none; }
   .topbar-inner { justify-content: center; }
 }
+
+/* ==========================================================================
+   Documento legal (Termos / Privacidade)
+   ========================================================================== */
+.legal-doc { max-width: 780px; margin: 0 auto; }
+.legal-doc .legal-updated {
+  color: var(--muted);
+  font-size: .82rem;
+  letter-spacing: .5px;
+  margin-bottom: 40px;
+}
+.legal-doc h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin: 42px 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.legal-doc h2:first-of-type { margin-top: 0; }
+.legal-doc p { margin-bottom: 16px; }
+.legal-doc ul { margin: 0 0 16px 22px; }
+.legal-doc li { margin-bottom: 8px; }
+.legal-doc .legal-callout {
+  background: var(--paper);
+  border-left: 3px solid var(--gold);
+  padding: 20px 24px;
+  margin: 26px 0;
+}
+.legal-doc .legal-callout p { margin: 0; }
+.legal-doc a { color: var(--gold-deep); text-decoration: underline; }
 
 /* ==========================================================================
    Acessibilidade
