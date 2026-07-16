@@ -1,5 +1,33 @@
 /* v2 — interações e animações (GSAP + ScrollTrigger)
    Sem JS (ou com prefers-reduced-motion), o conteúdo fica 100% visível. */
+
+/* Carrega o widget do Instagram (Elfsight) só quando a seção entra em vista.
+   Assim o platform.js (pesado) sai do caminho crítico de carregamento. */
+(function () {
+  var holder = document.querySelector('[class^="elfsight-app-"]');
+  if (!holder) return;
+  var loaded = false;
+  function loadElfsight() {
+    if (loaded) return;
+    loaded = true;
+    var s = document.createElement('script');
+    s.src = 'https://static.elfsight.com/platform/platform.js';
+    s.async = true;
+    document.body.appendChild(s);
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries.some(function (e) { return e.isIntersecting; })) {
+        loadElfsight();
+        io.disconnect();
+      }
+    }, { rootMargin: '400px' });
+    io.observe(holder);
+  } else {
+    loadElfsight();
+  }
+})();
+
 (function () {
   var nav = document.querySelector('.navbar');
   var toggle = document.querySelector('.nav-toggle');
